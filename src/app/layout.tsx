@@ -7,10 +7,24 @@ import "./globals.css";
 
 const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" });
 
+const TITLE = "Car Exit | موافقات المصريين بالخارج";
+const DESCRIPTION =
+  "موافقات مبادرة سيارات المصريين بالخارج في مكان واحد. اعرض موافقتك أو ابحث عن موافقة حسب الدولة، بدون سمسار وبدون عمولة.";
+
 export const metadata: Metadata = {
-  title: "Car Exit | موافقات المصريين بالخارج",
-  description:
-    "لوحة إعلانات مجانية تجمع أصحاب موافقات مبادرة سيارات المصريين بالخارج مع من يريد شراء موافقة، بدون سماسرة.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://carexit.app"),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Car Exit",
+    locale: "ar_EG",
+    url: "/",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Car Exit: موافقات مبادرة سيارات المصريين بالخارج" }],
+  },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: ["/og.png"] },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

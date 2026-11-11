@@ -17,8 +17,21 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params;
   if (!UUID.test(id)) return {};
   const supabase = await supabaseServer();
-  const { data } = await supabase.from("listings").select("title, country").eq("id", id).maybeSingle();
-  return data ? { title: `${data.title} | ${countryLabel(data.country)} | Car Exit` } : {};
+  const { data } = await supabase
+    .from("listings")
+    .select("title, country, kind, amount_usd")
+    .eq("id", id)
+    .maybeSingle();
+  if (!data) return {};
+  const title = `${data.title} | ${countryLabel(data.country)} | Car Exit`;
+  const description = `${KIND_LABEL[data.kind as Listing["kind"]]} · ${countryLabel(data.country)}${
+    data.amount_usd ? ` · ${formatUsd(data.amount_usd)}` : ""
+  }`;
+  return {
+    title,
+    description,
+    openGraph: { title, description, url: `/listings/${id}`, images: ["/og.png"], siteName: "Car Exit", locale: "ar_EG" },
+  };
 }
 
 export default async function ListingPage({ params }: Params) {
