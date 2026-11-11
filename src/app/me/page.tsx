@@ -172,7 +172,7 @@ function ContactLine({ contact }: { contact?: Contact }) {
         <b>{contact.display_name}</b> · <span dir="ltr">{contact.whatsapp}</span>
       </span>
       <a
-        href={whatsappLink(contact.whatsapp, "السلام عليكم، تواصلت معك من موقع شركاء السيارة")}
+        href={whatsappLink(contact.whatsapp, "السلام عليكم، تواصلت معك من موقع Car Exit")}
         target="_blank"
         rel="noopener noreferrer"
         className="btn-primary ms-auto px-3 py-1.5 text-sm"

@@ -1,4 +1,4 @@
--- Sayarat Shoraka: a board where approval holders and funders find each other.
+-- Car Exit: a board where approval holders and funders find each other.
 -- Phone numbers are never readable from the tables directly. They are only
 -- handed out by get_contact() once a listing owner accepts a contact request.
 

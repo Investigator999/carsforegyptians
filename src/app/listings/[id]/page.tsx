@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!UUID.test(id)) return {};
   const supabase = await supabaseServer();
   const { data } = await supabase.from("listings").select("title, country").eq("id", id).maybeSingle();
-  return data ? { title: `${data.title} | ${countryLabel(data.country)} | شركاء السيارة` } : {};
+  return data ? { title: `${data.title} | ${countryLabel(data.country)} | Car Exit` } : {};
 }
 
 export default async function ListingPage({ params }: Params) {

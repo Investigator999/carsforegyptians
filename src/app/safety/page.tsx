@@ -1,4 +1,4 @@
-export const metadata = { title: "نصائح الأمان | شركاء السيارة" };
+export const metadata = { title: "نصائح الأمان | Car Exit" };
 
 const TIPS = [
   "لا تحوّل أي مبلغ «حجز» أو «عربون» لشخص لم تقابله ولم تتأكد من شخصيته.",
