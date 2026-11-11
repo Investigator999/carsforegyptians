@@ -10,10 +10,10 @@ const row = (kind: "holder" | "funder", country: string, amount_usd: number | nu
 
 describe("summarize", () => {
   const s = summarize([
-    row("holder", "SA", 1500, true),
-    row("holder", "SA", 4500),
-    row("holder", "AE", 5200),
-    row("funder", "SA", 3000),
+    row("holder", "SA", 7500, true),
+    row("holder", "SA", 9500),
+    row("holder", "AE", 12500),
+    row("funder", "SA", 8500),
     row("funder", "KW", null),
   ]);
 
@@ -22,19 +22,20 @@ describe("summarize", () => {
   });
 
   it("groups countries, biggest first, with average ask", () => {
-    expect(s.countries[0]).toEqual({ country: "SA", holders: 2, funders: 1, total: 3, avgAsk: 3000 });
+    expect(s.countries[0]).toEqual({ country: "SA", holders: 2, funders: 1, total: 3, avgAsk: 8500 });
     expect(s.countries.map((c) => c.country)).toEqual(["SA", "AE", "KW"]);
   });
 
   it("puts amounts in price buckets", () => {
     expect(s.buckets.map((b) => [b.label, b.holders, b.funders])).toEqual([
-      ["أقل من 2K", 1, 0],
-      ["2K–3K", 0, 0],
-      ["3K–4K", 0, 1],
-      ["4K–5K", 1, 0],
-      ["5K+", 1, 0],
+      ["أقل من 8K", 1, 0],
+      ["8K–9K", 0, 1],
+      ["9K–10K", 1, 0],
+      ["10K–11K", 0, 0],
+      ["11K–12K", 0, 0],
+      ["12K+", 1, 0],
     ]);
-    expect([s.medianAsk, s.minAsk, s.maxAsk]).toEqual([4500, 1500, 5200]);
+    expect([s.medianAsk, s.avgAsk, s.minAsk, s.maxAsk]).toEqual([9500, 9833, 7500, 12500]);
   });
 });
 

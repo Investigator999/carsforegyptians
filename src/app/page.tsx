@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
             عندي موافقة
           </Link>
           <Link href="/listings/new?kind=funder" className="btn border border-white/40 text-white hover:bg-white/10">
-            عندي تمويل
+            عايز أشتري موافقة
           </Link>
         </div>
       </section>
@@ -59,7 +59,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
             </Link>
           </div>
           <p className="mb-3 text-sm text-stone-600">
-            {totals.h} صاحب موافقة و{totals.f} ممول معروضين الآن
+            {totals.h} صاحب موافقة و{totals.f} مشتري معروضين الآن
           </p>
           <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-white">
             <table className="w-full min-w-[480px] text-sm">
@@ -67,7 +67,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
                 <tr>
                   <th className="p-3 text-start">الدولة</th>
                   <th className="p-3 text-start">أصحاب موافقات</th>
-                  <th className="p-3 text-start">ممولين</th>
+                  <th className="p-3 text-start">مشترين</th>
                   <th className="p-3 text-start">متوسط الوديعة</th>
                   <th className="p-3 text-start">أقرب انتهاء</th>
                 </tr>
@@ -106,7 +106,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
           <select name="kind" defaultValue={kind} className="input" aria-label="نوع الإعلان">
             <option value="">الكل</option>
             <option value="holder">أصحاب موافقات</option>
-            <option value="funder">ممولين</option>
+            <option value="funder">مشترين</option>
           </select>
           <select name="car" defaultValue={car} className="input" aria-label="نوع السيارة">
             <option value="">أي سيارة</option>

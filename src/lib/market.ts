@@ -5,7 +5,7 @@ type Row = Pick<Listing, "kind" | "country" | "amount_usd" | "is_demo">;
 export type CountryRow = { country: string; holders: number; funders: number; total: number; avgAsk: number | null };
 export type Bucket = { label: string; from: number; to: number | null; holders: number; funders: number };
 
-export const BUCKET_EDGES = [0, 2000, 3000, 4000, 5000] as const;
+export const BUCKET_EDGES = [0, 8000, 9000, 10000, 11000, 12000] as const;
 
 function avg(ns: number[]) {
   return ns.length ? Math.round(ns.reduce((a, b) => a + b, 0) / ns.length) : null;
@@ -57,6 +57,7 @@ export function summarize(rows: Row[]) {
     funders: funders.length,
     demo: rows.filter((r) => r.is_demo).length,
     medianAsk: median(asks),
+    avgAsk: avg(asks),
     medianOffer: median(offers),
     minAsk: asks.length ? Math.min(...asks) : null,
     maxAsk: asks.length ? Math.max(...asks) : null,

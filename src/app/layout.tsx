@@ -10,7 +10,7 @@ const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" });
 export const metadata: Metadata = {
   title: "Car Exit | موافقات المصريين بالخارج",
   description:
-    "لوحة إعلانات مجانية تجمع أصحاب موافقات مبادرة سيارات المصريين بالخارج مع من يريد التمويل والمشاركة في الربح، بدون سماسرة.",
+    "لوحة إعلانات مجانية تجمع أصحاب موافقات مبادرة سيارات المصريين بالخارج مع من يريد شراء موافقة، بدون سماسرة.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

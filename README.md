@@ -1,12 +1,13 @@
 # 🚗 Car Exit
 
-لوحة إعلانات مجانية تجمع **أصحاب موافقات مبادرة سيارات المصريين بالخارج** مع **من يملك التمويل**، عشان يتفقوا مباشرة على شراكة (الممول يدفع ثمن السيارة والجمارك، والربح يتقسم بينهم) بدون سماسرة.
+لوحة إعلانات مجانية تجمع **أصحاب موافقات مبادرة سيارات المصريين بالخارج** مع **من يريد شراء موافقة**، عشان يتواصلوا مباشرة بدون سماسرة.
 
-A free listings board that connects Egyptians abroad who hold an approval under the expat car initiative with people who have the cash to fund the car, in exchange for a share of the profit. No brokers, no commission.
+A free listings board that connects Egyptians abroad who hold an approval under the expat car initiative with people who want to buy one. No brokers, no commission.
 
 ## What it does
-- **Two kinds of listings:** *holder* (has an approval and needs funding) and *funder* (has money and wants a partner). Each listing shows country, city, approval expiry, deposit paid, amount needed or available, the funder's profit share, and car type (fuel or electric).
+- **Two kinds of listings:** *holder* (مالك موافقة, has an approval to offer) and *buyer* (مشتري, stored as `funder`, wants an approval). Each listing shows country, city, approval expiry, deposit paid, the requested or offered amount, and car type (fuel or electric).
 - **Browse and filter** by country, listing kind and car type. Sort by newest, soonest expiry or lowest deposit.
+- **Market dashboard** (`/dashboard`): totals, offers by country, offers by amount, and every offer sorted by price. 20 demo offers (`is_demo`) are badged "not for contact" and can't be contacted; remove them with `delete from listings where is_demo;`.
 - **Market table by country:** number of holders and funders, average deposit, and the soonest expiry.
 - **Private contact:** WhatsApp numbers never appear on the site. A visitor sends a contact request with a short message. If the listing owner accepts, both sides see each other's name and WhatsApp (with a one-tap WhatsApp button) under **حسابي**.
 - **Safety:**

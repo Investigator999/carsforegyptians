@@ -33,7 +33,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         {l.kind === "holder" && (
           <Stat label="الوديعة المدفوعة" value={formatUsd(l.deposit_usd)} />
         )}
-        <Stat label={l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المتاح"} value={formatUsd(l.amount_usd)} />
+        <Stat label={l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المعروض"} value={formatUsd(l.amount_usd)} />
         <Stat label="نوع السيارة" value={CAR_KIND_LABEL[l.car_kind]} />
       </dl>
     </Link>

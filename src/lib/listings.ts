@@ -23,13 +23,13 @@ export type Listing = {
 };
 
 export const KIND_LABEL: Record<ListingKind, string> = {
-  holder: "صاحب موافقة يبحث عن ممول",
-  funder: "ممول يبحث عن صاحب موافقة",
+  holder: "صاحب موافقة يعرضها",
+  funder: "مشتري يبحث عن موافقة",
 };
 
 export const KIND_SHORT: Record<ListingKind, string> = {
   holder: "صاحب موافقة",
-  funder: "ممول",
+  funder: "مشتري",
 };
 
 export const CAR_KIND_LABEL: Record<CarKind, string> = {

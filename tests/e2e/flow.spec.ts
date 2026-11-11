@@ -67,7 +67,7 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
 
   // 3. funder asks to connect
   const f = await signUp(browser, funder, listingUrl);
-  await f.getByLabel("رسالة لصاحب الإعلان").fill("أهلًا، معي التمويل وأحب نتكلم");
+  await f.getByLabel("رسالة لصاحب الإعلان").fill("أهلًا، مهتم بالموافقة وأحب نتكلم");
   await f.getByRole("button", { name: "اطلب التواصل" }).click();
   await expect(f.getByText("أرسلت طلب تواصل على هذا الإعلان")).toBeVisible();
   await f.goto("/me");
@@ -77,7 +77,7 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   // 4. holder accepts
   await h.goto("/me");
   const req = h.getByTestId("incoming-request").filter({ hasText: funder.name });
-  await expect(req).toContainText("معي التمويل");
+  await expect(req).toContainText("مهتم بالموافقة");
   await req.getByRole("button", { name: "وافق وشارك رقمي" }).click();
   await expect(req.getByTestId("contact")).toContainText(funder.phone);
 

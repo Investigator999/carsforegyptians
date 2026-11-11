@@ -62,7 +62,7 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
           name="title"
           defaultValue={initial?.title}
           required
-          placeholder={holder ? "مثال: موافقة سارية حتى 2028 وأبحث عن شريك ممول" : "مثال: معي 20 ألف دولار للمشاركة في سيارة"}
+          placeholder={holder ? "مثال: موافقة سارية حتى 2028" : "مثال: أبحث عن موافقة سارية في السعودية"}
           className="input"
         />
         <FieldError state={state} name="title" />
@@ -85,7 +85,7 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="label" htmlFor="amount_usd">{holder ? "الوديعة المطلوبة (دولار)" : "المبلغ المتاح (دولار)"}</label>
+          <label className="label" htmlFor="amount_usd">{holder ? "الوديعة المطلوبة (دولار)" : "المبلغ المعروض (دولار)"}</label>
           <input id="amount_usd" name="amount_usd" inputMode="numeric" defaultValue={initial?.amount_usd ?? ""} dir="ltr" className="input" />
           <FieldError state={state} name="amount_usd" />
         </div>

@@ -49,7 +49,7 @@ export default async function ListingPage({ params }: Params) {
           ["الوديعة المدفوعة", formatUsd(l.deposit_usd)],
         ] as [string, string][])
       : []),
-    [l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المتاح", formatUsd(l.amount_usd)],
+    [l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المعروض", formatUsd(l.amount_usd)],
     ["نوع السيارة", CAR_KIND_LABEL[l.car_kind]],
     ["تاريخ النشر", new Date(l.created_at).toLocaleDateString("ar-EG")],
   ];

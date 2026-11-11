@@ -40,7 +40,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     <div className="space-y-8">
       <header>
         <h1 className="text-2xl font-extrabold">لوحة السوق</h1>
-        <p className="text-stone-600">كل العروض المتاحة الآن من أصحاب الموافقات والممولين، حسب الدولة والمبلغ.</p>
+        <p className="text-stone-600">كل العروض المتاحة الآن من أصحاب الموافقات والمشترين، حسب الدولة والمبلغ.</p>
       </header>
 
       {s.demo > 0 && (
@@ -53,10 +53,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Tile label="إجمالي العروض" value={String(s.total)} />
         <Tile label="أصحاب موافقات" value={String(s.holders)} swatch={HOLDER} />
-        <Tile label="ممولين" value={String(s.funders)} swatch={FUNDER} />
+        <Tile label="مشترين" value={String(s.funders)} swatch={FUNDER} />
         <Tile
           label="متوسط الوديعة المطلوبة"
-          value={compactUsd(s.medianAsk)}
+          value={compactUsd(s.avgAsk)}
           note={
             s.minAsk != null ? (
               <>
@@ -88,7 +88,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                     style={{ width: `${(c.total / maxCountry) * 85}%` }}
                   >
                     <Segment n={c.holders} total={c.total} color={HOLDER} tip={`${countryLabel(c.country)}: ${c.holders} صاحب موافقة`} />
-                    <Segment n={c.funders} total={c.total} color={FUNDER} tip={`${countryLabel(c.country)}: ${c.funders} ممول`} />
+                    <Segment n={c.funders} total={c.total} color={FUNDER} tip={`${countryLabel(c.country)}: ${c.funders} مشتري`} />
                   </div>
                   <span className="shrink-0 font-bold tabular-nums">{c.total}</span>
                 </div>
@@ -103,7 +103,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
               <tr>
                 <th className="p-2 text-start">الدولة</th>
                 <th className="p-2 text-start">أصحاب موافقات</th>
-                <th className="p-2 text-start">ممولين</th>
+                <th className="p-2 text-start">مشترين</th>
                 <th className="p-2 text-start">متوسط الوديعة المطلوبة</th>
               </tr>
             </thead>
@@ -125,13 +125,13 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       <section className="card space-y-4">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
           <h2 className="text-lg font-extrabold">العروض حسب المبلغ</h2>
-          <Legend holder="الوديعة المطلوبة" funder="المبلغ المتاح عند الممول" />
+          <Legend holder="الوديعة المطلوبة" funder="المبلغ المعروض من المشتري" />
         </div>
         <div className="flex h-48 items-end gap-3 border-b border-stone-200 pb-0 sm:gap-6" dir="ltr">
           {s.buckets.map((b) => (
             <div key={b.label} className="flex h-full flex-1 items-end justify-center gap-[2px]">
               <Column n={b.holders} max={maxBucket} color={HOLDER} tip={`${b.label}: ${b.holders} صاحب موافقة`} />
-              <Column n={b.funders} max={maxBucket} color={FUNDER} tip={`${b.label}: ${b.funders} ممول`} />
+              <Column n={b.funders} max={maxBucket} color={FUNDER} tip={`${b.label}: ${b.funders} مشتري`} />
             </div>
           ))}
         </div>
@@ -151,7 +151,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           {[
             ["", "الكل"],
             ["holder", "أصحاب موافقات"],
-            ["funder", "ممولين"],
+            ["funder", "مشترين"],
           ].map(([k, label]) => (
             <Link
               key={k}
@@ -222,7 +222,7 @@ function Tile({ label, value, note, swatch }: { label: string; value: string; no
   );
 }
 
-function Legend({ holder = "أصحاب موافقات", funder = "ممولين" }: { holder?: string; funder?: string }) {
+function Legend({ holder = "أصحاب موافقات", funder = "مشترين" }: { holder?: string; funder?: string }) {
   return (
     <div className="flex gap-4 text-sm text-stone-600">
       {[
