@@ -68,6 +68,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             الموقع مساحة إعلانات مجانية فقط، ولا يتدخل في أي اتفاق ولا يتقاضى عمولة. راجع أي اتفاق مع محامٍ
             قبل دفع أي مبلغ. <Link href="/safety" className="underline">نصائح الأمان</Link>
           </p>
+          <p className="mt-2">
+            تابعنا على{" "}
+            <a
+              href="https://www.facebook.com/share/1JvCym9rgh/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand-700 underline"
+            >
+              فيسبوك
+            </a>
+          </p>
         </footer>
       </body>
     </html>
