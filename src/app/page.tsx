@@ -34,11 +34,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
     <div className="space-y-8">
       <section className="rounded-3xl bg-brand-700 p-6 text-white sm:p-8">
         <h1 className="mb-3 text-2xl font-extrabold leading-snug sm:text-3xl">
-          عندك موافقة مبادرة سيارات المصريين بالخارج ومحتاج تمويل؟ أو معاك فلوس وعايز تشارك؟
+          موافقات مبادرة سيارات المصريين بالخارج في مكان واحد
         </h1>
         <p className="mb-5 max-w-2xl leading-8 text-brand-100">
-          اعرض موافقتك أو مبلغ التمويل المتاح عندك، وتواصل مباشرة مع الطرف الآخر بدون سمسار وبدون عمولة. الممول
-          يدفع ثمن السيارة والجمارك، وتتقسم أرباح البيع بينكم حسب اتفاقكم.
+          اعرض موافقتك وتواصل مباشرة مع الطرف الآخر بدون سمسار وبدون عمولة. المشتري يدفع ثمن السيارة والجمارك،
+          وانت حلال عليك الوديعة.
         </p>
         <div className="flex flex-wrap gap-3">
           <Link href="/listings/new?kind=holder" className="btn bg-white text-brand-700 hover:bg-brand-50">

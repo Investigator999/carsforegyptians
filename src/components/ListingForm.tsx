@@ -83,16 +83,11 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="label" htmlFor="amount_usd">{holder ? "التمويل المطلوب (دولار)" : "المبلغ المتاح (دولار)"}</label>
+          <label className="label" htmlFor="amount_usd">{holder ? "الوديعة المطلوبة (دولار)" : "المبلغ المتاح (دولار)"}</label>
           <input id="amount_usd" name="amount_usd" inputMode="numeric" defaultValue={initial?.amount_usd ?? ""} dir="ltr" className="input" />
           <FieldError state={state} name="amount_usd" />
-        </div>
-        <div>
-          <label className="label" htmlFor="profit_share_pct">نسبة الممول من الربح %</label>
-          <input id="profit_share_pct" name="profit_share_pct" inputMode="numeric" placeholder="فارغ = بالاتفاق" defaultValue={initial?.profit_share_pct ?? ""} dir="ltr" className="input" />
-          <FieldError state={state} name="profit_share_pct" />
         </div>
         <div>
           <label className="label" htmlFor="car_kind">نوع السيارة</label>

@@ -14,7 +14,6 @@ export type Listing = {
   deposit_usd: number | null;
   car_kind: CarKind;
   amount_usd: number | null;
-  profit_share_pct: number | null;
   title: string;
   details: string | null;
   status: "active" | "closed";
@@ -65,7 +64,6 @@ export const listingSchema = z
     deposit_usd: optionalInt(1_000_000),
     car_kind: z.enum(["fuel", "electric", "any"]).default("any"),
     amount_usd: optionalInt(10_000_000),
-    profit_share_pct: optionalInt(100),
     title: z.string().trim().min(5, "العنوان قصير جدًا").max(100, "العنوان طويل جدًا"),
     details: optionalText(2000),
   })
@@ -88,7 +86,7 @@ export function parseListingForm(form: FormData):
   | { ok: false; errors: FieldErrors } {
   const raw = Object.fromEntries(
     ["kind", "country", "city", "approval_expires_on", "deposit_usd", "car_kind", "amount_usd",
-      "profit_share_pct", "title", "details"].map((k) => [k, form.get(k) ?? undefined]),
+      "title", "details"].map((k) => [k, form.get(k) ?? undefined]),
   );
   const result = listingSchema.safeParse(raw);
   if (result.success) return { ok: true, data: result.data };

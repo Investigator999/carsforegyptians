@@ -26,8 +26,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         {l.kind === "holder" && (
           <Stat label="الوديعة المدفوعة" value={formatUsd(l.deposit_usd)} />
         )}
-        <Stat label={l.kind === "holder" ? "التمويل المطلوب" : "المبلغ المتاح"} value={formatUsd(l.amount_usd)} />
-        <Stat label="نسبة الممول من الربح" value={l.profit_share_pct != null ? `${l.profit_share_pct}%` : "بالاتفاق"} />
+        <Stat label={l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المتاح"} value={formatUsd(l.amount_usd)} />
         <Stat label="نوع السيارة" value={CAR_KIND_LABEL[l.car_kind]} />
       </dl>
     </Link>

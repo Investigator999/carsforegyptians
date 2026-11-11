@@ -31,8 +31,7 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   await h.getByLabel("عنوان الإعلان").fill(title);
   await h.getByLabel("تاريخ انتهاء الموافقة").fill("2028-03-01");
   await h.getByLabel("الوديعة المدفوعة (دولار)").fill("850");
-  await h.getByLabel("التمويل المطلوب (دولار)").fill("25000");
-  await h.getByLabel("نسبة الممول من الربح %").fill("50");
+  await h.getByLabel("الوديعة المطلوبة (دولار)").fill("25000");
   // a mistake shows an error but keeps everything already typed
   await h.getByLabel("عنوان الإعلان").fill("abc");
   await h.getByRole("button", { name: "نشر الإعلان" }).click();

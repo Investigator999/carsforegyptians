@@ -16,7 +16,6 @@ describe("parseListingForm", () => {
     deposit_usd: "850",
     car_kind: "fuel",
     amount_usd: "25,000",
-    profit_share_pct: "50",
     title: "موافقة سارية حتى 2028",
     details: "",
   };
@@ -44,10 +43,10 @@ describe("parseListingForm", () => {
   });
 
   it("rejects unknown countries and bad percentages", () => {
-    const r = parseListingForm(form({ ...holder, country: "XX", profit_share_pct: "120" }));
+    const r = parseListingForm(form({ ...holder, country: "XX", deposit_usd: "-5" }));
     expect(r.ok).toBe(false);
     if (r.ok) return;
-    expect(Object.keys(r.errors).sort()).toEqual(["country", "profit_share_pct"]);
+    expect(Object.keys(r.errors).sort()).toEqual(["country", "deposit_usd"]);
   });
 });
 
