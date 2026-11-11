@@ -30,13 +30,15 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   await h.getByLabel("المدينة (اختياري)").fill("جدة");
   await h.getByLabel("عنوان الإعلان").fill(title);
   await h.getByLabel("تاريخ انتهاء الموافقة").fill("2028-03-01");
-  await h.getByLabel("الوديعة المدفوعة (دولار)").fill("850");
-  await h.getByLabel("الوديعة المطلوبة (دولار)").fill("25000");
+  await h.getByLabel("المدفوع").fill("850");
+  await h.getByLabel("الوديعة", { exact: true }).fill("25000");
+  await h.getByLabel("كاش").fill("3000");
+  await expect(h.getByTestId("form-total")).toContainText("$28,000");
   // a mistake shows an error but keeps everything already typed
   await h.getByLabel("عنوان الإعلان").fill("abc");
   await h.getByRole("button", { name: "نشر الإعلان" }).click();
   await expect(h.getByText("العنوان قصير جدًا")).toBeVisible();
-  await expect(h.getByLabel("الوديعة المدفوعة (دولار)")).toHaveValue("850");
+  await expect(h.getByLabel("المدفوع")).toHaveValue("850");
   await h.getByLabel("عنوان الإعلان").fill(title);
   await h.getByRole("button", { name: "نشر الإعلان" }).click();
   await h.waitForURL(/\/listings\/[0-9a-f-]{36}$/);
@@ -60,7 +62,7 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   // …and the dashboard counts it, next to the demo offers that can't be contacted
   await anon.goto("/dashboard");
   await expect(anon.getByTestId("demo-note")).toBeVisible();
-  await expect(anon.getByTestId("offer-row").filter({ hasText: "$25,000" }).first()).toBeVisible();
+  await expect(anon.getByTestId("offer-row").filter({ hasText: "$28,000" }).first()).toBeVisible();
   await anon.goto("/");
   await anon.getByTestId("listing-card").filter({ hasText: "تجريبي" }).first().click();
   await expect(anon.getByTestId("demo-listing")).toBeVisible();

@@ -1,19 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { compactUsd, median, summarize } from "@/lib/market";
 
-const row = (kind: "holder" | "funder", country: string, amount_usd: number | null, is_demo = false) => ({
-  kind,
-  country,
-  amount_usd,
-  is_demo,
-});
+const row = (
+  kind: "holder" | "funder",
+  country: string,
+  amount_usd: number | null,
+  is_demo = false,
+  cash_usd: number | null = null,
+) => ({ kind, country, amount_usd, cash_usd, is_demo });
 
 describe("summarize", () => {
   const s = summarize([
-    row("holder", "SA", 7500, true),
-    row("holder", "SA", 9500),
+    row("holder", "SA", 7500, true, 2000),
+    row("holder", "SA", 9500, false, 3000),
     row("holder", "AE", 12500),
-    row("funder", "SA", 8500),
+    row("funder", "SA", 8500, false, 1500),
     row("funder", "KW", null),
   ]);
 
@@ -22,7 +23,7 @@ describe("summarize", () => {
   });
 
   it("groups countries, biggest first, with average ask", () => {
-    expect(s.countries[0]).toEqual({ country: "SA", holders: 2, funders: 1, total: 3, avgAsk: 8500 });
+    expect(s.countries[0]).toEqual({ country: "SA", holders: 2, funders: 1, total: 3, avgAsk: 8500, avgCash: 2500 });
     expect(s.countries.map((c) => c.country)).toEqual(["SA", "AE", "KW"]);
   });
 
@@ -36,6 +37,7 @@ describe("summarize", () => {
       ["12K+", 1, 0],
     ]);
     expect([s.medianAsk, s.avgAsk, s.minAsk, s.maxAsk]).toEqual([9500, 9833, 7500, 12500]);
+    expect([s.avgCashAsk, s.avgCashOffer]).toEqual([2500, 1500]);
   });
 });
 

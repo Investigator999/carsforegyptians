@@ -1,8 +1,15 @@
 import type { Listing } from "./listings";
 
-type Row = Pick<Listing, "kind" | "country" | "amount_usd" | "is_demo">;
+type Row = Pick<Listing, "kind" | "country" | "amount_usd" | "cash_usd" | "is_demo">;
 
-export type CountryRow = { country: string; holders: number; funders: number; total: number; avgAsk: number | null };
+export type CountryRow = {
+  country: string;
+  holders: number;
+  funders: number;
+  total: number;
+  avgAsk: number | null;
+  avgCash: number | null;
+};
 export type Bucket = { label: string; from: number; to: number | null; holders: number; funders: number };
 
 export const BUCKET_EDGES = [0, 8000, 9000, 10000, 11000, 12000] as const;
@@ -26,13 +33,15 @@ export function summarize(rows: Row[]) {
 
   const byCountry = new Map<string, CountryRow>();
   for (const r of rows) {
-    const c = byCountry.get(r.country) ?? { country: r.country, holders: 0, funders: 0, total: 0, avgAsk: null };
+    const c = byCountry.get(r.country) ?? { country: r.country, holders: 0, funders: 0, total: 0, avgAsk: null, avgCash: null };
     if (r.kind === "holder") c.holders++;
     else c.funders++;
     c.total++;
     byCountry.set(r.country, c);
   }
+  const cashOf = (rs: Row[]) => rs.map((r) => r.cash_usd).filter((n): n is number => n != null);
   for (const c of byCountry.values()) {
+    c.avgCash = avg(cashOf(holders.filter((r) => r.country === c.country)));
     c.avgAsk = avg(
       holders.filter((r) => r.country === c.country && r.amount_usd != null).map((r) => r.amount_usd as number),
     );
@@ -58,6 +67,8 @@ export function summarize(rows: Row[]) {
     demo: rows.filter((r) => r.is_demo).length,
     medianAsk: median(asks),
     avgAsk: avg(asks),
+    avgCashAsk: avg(cashOf(holders)),
+    avgCashOffer: avg(cashOf(funders)),
     medianOffer: median(offers),
     minAsk: asks.length ? Math.min(...asks) : null,
     maxAsk: asks.length ? Math.max(...asks) : null,

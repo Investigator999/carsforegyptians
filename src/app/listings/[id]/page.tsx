@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { myProfile, supabaseServer } from "@/lib/supabase/server";
 import { countryLabel } from "@/lib/countries";
-import { CAR_KIND_LABEL, KIND_LABEL, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
+import { DEAL_NOTE, buyerTotal, CAR_KIND_LABEL, KIND_LABEL, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
 import { DemoBadge, KindBadge } from "@/components/ListingCard";
 import { ContactForm, ReportForm } from "./ListingActions";
 
@@ -19,13 +19,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const supabase = await supabaseServer();
   const { data } = await supabase
     .from("listings")
-    .select("title, country, kind, amount_usd")
+    .select("title, country, kind, amount_usd, cash_usd")
     .eq("id", id)
     .maybeSingle();
   if (!data) return {};
   const title = `${data.title} | ${countryLabel(data.country)} | Car Exit`;
   const description = `${KIND_LABEL[data.kind as Listing["kind"]]} · ${countryLabel(data.country)}${
-    data.amount_usd ? ` · ${formatUsd(data.amount_usd)}` : ""
+    data.amount_usd ? ` · الوديعة ${formatUsd(data.amount_usd)}` : ""
+  }${data.cash_usd ? ` · كاش ${formatUsd(data.cash_usd)}` : ""
   }`;
   return {
     title,
@@ -59,10 +60,12 @@ export default async function ListingPage({ params }: Params) {
     ...(l.kind === "holder"
       ? ([
           ["الموافقة", l.approval_expires_on ? expiryLabel(l.approval_expires_on) : "—"],
-          ["الوديعة المدفوعة", formatUsd(l.deposit_usd)],
+          ["المدفوع", formatUsd(l.deposit_usd)],
         ] as [string, string][])
       : []),
-    [l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المعروض", formatUsd(l.amount_usd)],
+    ["الوديعة", formatUsd(l.amount_usd)],
+    ["كاش", formatUsd(l.cash_usd)],
+    ["الإجمالي على المشتري", formatUsd(buyerTotal(l))],
     ["نوع السيارة", CAR_KIND_LABEL[l.car_kind]],
     ["تاريخ النشر", new Date(l.created_at).toLocaleDateString("ar-EG")],
   ];
@@ -86,6 +89,7 @@ export default async function ListingPage({ params }: Params) {
             </div>
           ))}
         </dl>
+        <p className="rounded-xl bg-brand-50 px-3 py-2 text-sm leading-7 text-brand-700">{DEAL_NOTE}</p>
         {l.details && <p className="whitespace-pre-line leading-8 text-stone-800">{l.details}</p>}
         <p className="text-sm text-stone-500">صاحب الإعلان: {l.owner?.display_name}</p>
       </article>

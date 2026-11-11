@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { supabaseServer } from "@/lib/supabase/server";
 import { countryLabel } from "@/lib/countries";
-import { KIND_SHORT, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
+import { DEAL_NOTE, KIND_SHORT, buyerTotal, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
 import { compactUsd, summarize } from "@/lib/market";
 import { DemoBadge, KindBadge } from "@/components/ListingCard";
 
@@ -15,7 +15,7 @@ const FUNDER = "#d97706";
 
 type Row = Pick<
   Listing,
-  "id" | "kind" | "country" | "city" | "amount_usd" | "approval_expires_on" | "is_demo" | "title"
+  "id" | "kind" | "country" | "city" | "amount_usd" | "cash_usd" | "approval_expires_on" | "is_demo" | "title"
 >;
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
@@ -24,7 +24,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const supabase = await supabaseServer();
   const { data } = await supabase
     .from("listings")
-    .select("id, kind, country, city, amount_usd, approval_expires_on, is_demo, title")
+    .select("id, kind, country, city, amount_usd, cash_usd, approval_expires_on, is_demo, title")
     .eq("status", "active")
     .eq("hidden", false)
     .limit(2000);
@@ -34,13 +34,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const maxBucket = Math.max(1, ...s.buckets.flatMap((b) => [b.holders, b.funders]));
   const list = rows
     .filter((r) => !filter || r.kind === filter)
-    .sort((a, b) => (a.amount_usd ?? Infinity) - (b.amount_usd ?? Infinity));
+    .sort((a, b) => (buyerTotal(a) ?? Infinity) - (buyerTotal(b) ?? Infinity));
 
   return (
     <div className="space-y-8">
       <header>
         <h1 className="text-2xl font-extrabold">لوحة السوق</h1>
         <p className="text-stone-600">كل العروض المتاحة الآن من أصحاب الموافقات والمشترين، حسب الدولة والمبلغ.</p>
+        <p className="mt-2 text-sm text-stone-500">{DEAL_NOTE}</p>
       </header>
 
       {s.demo > 0 && (
@@ -50,12 +51,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       )}
 
       {/* KPI row */}
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Tile label="إجمالي العروض" value={String(s.total)} />
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <div className="col-span-2 sm:col-span-1">
+          <Tile label="إجمالي العروض" value={String(s.total)} />
+        </div>
         <Tile label="أصحاب موافقات" value={String(s.holders)} swatch={HOLDER} />
         <Tile label="مشترين" value={String(s.funders)} swatch={FUNDER} />
         <Tile
-          label="متوسط الوديعة المطلوبة"
+          label="متوسط الوديعة"
           value={compactUsd(s.avgAsk)}
           note={
             s.minAsk != null ? (
@@ -65,6 +68,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             ) : undefined
           }
         />
+        <Tile label="متوسط الكاش المطلوب" value={compactUsd(s.avgCashAsk)} />
       </section>
 
       {/* By country: stacked horizontal bars */}
@@ -104,7 +108,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 <th className="p-2 text-start">الدولة</th>
                 <th className="p-2 text-start">أصحاب موافقات</th>
                 <th className="p-2 text-start">مشترين</th>
-                <th className="p-2 text-start">متوسط الوديعة المطلوبة</th>
+                <th className="p-2 text-start">متوسط الوديعة</th>
+                <th className="p-2 text-start">متوسط الكاش</th>
               </tr>
             </thead>
             <tbody>
@@ -114,6 +119,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                   <td className="p-2">{c.holders}</td>
                   <td className="p-2">{c.funders}</td>
                   <td className="p-2">{formatUsd(c.avgAsk)}</td>
+                  <td className="p-2">{formatUsd(c.avgCash)}</td>
                 </tr>
               ))}
             </tbody>
@@ -125,7 +131,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       <section className="card space-y-4">
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
           <h2 className="text-lg font-extrabold">العروض حسب المبلغ</h2>
-          <Legend holder="الوديعة المطلوبة" funder="المبلغ المعروض من المشتري" />
+          <Legend holder="الوديعة اللي بيطلبها صاحب الموافقة" funder="الوديعة اللي يقدر يدفعها المشتري" />
         </div>
         <div className="flex h-48 items-end gap-3 border-b border-stone-200 pb-0 sm:gap-6" dir="ltr">
           {s.buckets.map((b) => (
@@ -147,7 +153,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       {/* Every offer, cheapest first */}
       <section className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="me-auto text-lg font-extrabold">كل العروض من الأقل للأعلى</h2>
+          <h2 className="me-auto text-lg font-extrabold">كل العروض من الأقل للأعلى (حسب الإجمالي)</h2>
           {[
             ["", "الكل"],
             ["holder", "أصحاب موافقات"],
@@ -166,7 +172,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <table className="w-full min-w-[560px] text-sm">
             <thead className="bg-stone-50 text-stone-600">
               <tr>
-                <th className="p-3 text-start">المبلغ</th>
+                <th className="p-3 text-start">الوديعة</th>
+                <th className="p-3 text-start">كاش</th>
+                <th className="p-3 text-start">الإجمالي</th>
                 <th className="p-3 text-start">النوع</th>
                 <th className="p-3 text-start">الدولة</th>
                 <th className="p-3 text-start">الموافقة</th>
@@ -176,7 +184,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             <tbody>
               {list.map((r) => (
                 <tr key={r.id} className="border-t border-stone-100" data-testid="offer-row">
-                  <td className="p-3 font-bold tabular-nums">{formatUsd(r.amount_usd)}</td>
+                  <td className="p-3 tabular-nums">{formatUsd(r.amount_usd)}</td>
+                  <td className="p-3 tabular-nums">{formatUsd(r.cash_usd)}</td>
+                  <td className="p-3 font-bold tabular-nums text-brand-700">{formatUsd(buyerTotal(r))}</td>
                   <td className="p-3">
                     <KindBadge kind={r.kind} />
                     <span className="sr-only">{KIND_SHORT[r.kind]}</span>

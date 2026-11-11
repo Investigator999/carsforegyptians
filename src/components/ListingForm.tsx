@@ -3,8 +3,10 @@
 import { useActionState, useState } from "react";
 import type { FormState } from "@/app/actions";
 import { COUNTRIES } from "@/lib/countries";
-import { CAR_KIND_LABEL, KIND_LABEL, type Listing, type ListingKind } from "@/lib/listings";
+import { CAR_KIND_LABEL, DEAL_NOTE, KIND_LABEL, formatUsd, type Listing, type ListingKind } from "@/lib/listings";
 import { FieldError, FormMessage, SubmitButton, KeepForm } from "./forms";
+
+const toNumber = (v: string) => Number(v.replace(/[^\d]/g, "")) || 0;
 
 type Props = {
   action: (state: FormState, form: FormData) => Promise<FormState>;
@@ -18,6 +20,8 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
   const [kind, setKind] = useState<ListingKind>(initial?.kind ?? defaultKind);
   const editing = Boolean(initial?.id);
   const holder = kind === "holder";
+  const [amount, setAmount] = useState(initial?.amount_usd ?? 0);
+  const [cash, setCash] = useState(initial?.cash_usd ?? 0);
 
   return (
     <KeepForm action={formAction} pending={pending} className="space-y-5">
@@ -68,27 +72,14 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
         <FieldError state={state} name="title" />
       </div>
 
-      {holder && (
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
+        {holder && (
           <div>
             <label className="label" htmlFor="approval_expires_on">تاريخ انتهاء الموافقة</label>
             <input id="approval_expires_on" name="approval_expires_on" type="date" defaultValue={initial?.approval_expires_on ?? ""} required className="input" />
             <FieldError state={state} name="approval_expires_on" />
           </div>
-          <div>
-            <label className="label" htmlFor="deposit_usd">الوديعة المدفوعة (دولار)</label>
-            <input id="deposit_usd" name="deposit_usd" inputMode="numeric" defaultValue={initial?.deposit_usd ?? ""} dir="ltr" className="input" />
-            <FieldError state={state} name="deposit_usd" />
-          </div>
-        </div>
-      )}
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="label" htmlFor="amount_usd">{holder ? "الوديعة المطلوبة (دولار)" : "المبلغ المعروض (دولار)"}</label>
-          <input id="amount_usd" name="amount_usd" inputMode="numeric" defaultValue={initial?.amount_usd ?? ""} dir="ltr" className="input" />
-          <FieldError state={state} name="amount_usd" />
-        </div>
+        )}
         <div>
           <label className="label" htmlFor="car_kind">نوع السيارة</label>
           <select id="car_kind" name="car_kind" defaultValue={initial?.car_kind ?? "any"} className="input">
@@ -98,6 +89,54 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
           </select>
         </div>
       </div>
+
+      <fieldset className="space-y-4 rounded-2xl border border-stone-200 bg-stone-50 p-4">
+        <legend className="px-1 text-sm font-bold text-stone-700">المبالغ بالدولار</legend>
+        <div className={`grid gap-4 ${holder ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+          {holder && (
+            <div>
+              <label className="label" htmlFor="deposit_usd">المدفوع</label>
+              <input id="deposit_usd" name="deposit_usd" inputMode="numeric" defaultValue={initial?.deposit_usd ?? ""} dir="ltr" className="input" />
+              <p className="mt-1 text-xs text-stone-500">اللي دفعته عشان تاخد الموافقة</p>
+              <FieldError state={state} name="deposit_usd" />
+            </div>
+          )}
+          <div>
+            <label className="label" htmlFor="amount_usd">الوديعة</label>
+            <input
+              id="amount_usd"
+              name="amount_usd"
+              inputMode="numeric"
+              defaultValue={initial?.amount_usd ?? ""}
+              onChange={(e) => setAmount(toNumber(e.target.value))}
+              dir="ltr"
+              className="input"
+            />
+            <p className="mt-1 text-xs text-stone-500">
+              {holder ? "يدفعها المشتري للحكومة وترجع لك بعد 5 سنين" : "الوديعة اللي تقدر تدفعها"}
+            </p>
+            <FieldError state={state} name="amount_usd" />
+          </div>
+          <div>
+            <label className="label" htmlFor="cash_usd">كاش</label>
+            <input
+              id="cash_usd"
+              name="cash_usd"
+              inputMode="numeric"
+              defaultValue={initial?.cash_usd ?? ""}
+              onChange={(e) => setCash(toNumber(e.target.value))}
+              dir="ltr"
+              className="input"
+            />
+            <p className="mt-1 text-xs text-stone-500">{holder ? "الكاش اللي بتطلبه من المشتري" : "الكاش اللي تدفعه لصاحب الموافقة"}</p>
+            <FieldError state={state} name="cash_usd" />
+          </div>
+        </div>
+        <p className="rounded-xl bg-white px-3 py-2 text-sm" data-testid="form-total">
+          إجمالي على المشتري (الوديعة + الكاش): <b dir="ltr">{formatUsd(amount + cash)}</b>
+        </p>
+        <p className="text-xs leading-6 text-stone-500">{DEAL_NOTE}</p>
+      </fieldset>
 
       <div>
         <label className="label" htmlFor="details">تفاصيل (اختياري)</label>

@@ -27,6 +27,13 @@ describe("parseListingForm", () => {
     expect(r.data).toMatchObject({ city: "الرياض", deposit_usd: 850, amount_usd: 25000, details: null });
   });
 
+  it("reads the cash amount and allows it to be missing", () => {
+    const withCash = parseListingForm(form({ ...holder, cash_usd: "3,000" }));
+    expect(withCash.ok && withCash.data.cash_usd).toBe(3000);
+    const without = parseListingForm(form(holder));
+    expect(without.ok && without.data.cash_usd).toBeNull();
+  });
+
   it("requires an expiry date for holders", () => {
     const r = parseListingForm(form({ ...holder, approval_expires_on: "" }));
     expect(r.ok).toBe(false);

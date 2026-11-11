@@ -22,7 +22,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
   if (kind) q = q.eq("kind", kind);
   if (car) q = q.in("car_kind", [car, "any"]);
   if (sort === "expiry") q = q.order("approval_expires_on", { ascending: true, nullsFirst: false });
-  else if (sort === "deposit") q = q.order("deposit_usd", { ascending: true, nullsFirst: false });
+  else if (sort === "deposit") q = q.order("amount_usd", { ascending: true, nullsFirst: false });
+  else if (sort === "cash") q = q.order("cash_usd", { ascending: true, nullsFirst: false });
   q = q.order("created_at", { ascending: false });
 
   const [{ data: listings }, { data: stats }] = await Promise.all([q, supabase.rpc("market_stats")]);
@@ -68,7 +69,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
                   <th className="p-3 text-start">الدولة</th>
                   <th className="p-3 text-start">أصحاب موافقات</th>
                   <th className="p-3 text-start">مشترين</th>
-                  <th className="p-3 text-start">متوسط الوديعة</th>
+                  <th className="p-3 text-start">متوسط المدفوع</th>
                   <th className="p-3 text-start">أقرب انتهاء</th>
                 </tr>
               </thead>

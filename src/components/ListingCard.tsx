@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { countryLabel } from "@/lib/countries";
-import { CAR_KIND_LABEL, KIND_SHORT, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
+import { CAR_KIND_LABEL, KIND_SHORT, buyerTotal, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
 
 export function KindBadge({ kind }: { kind: Listing["kind"] }) {
   const cls = kind === "holder" ? "bg-brand-100 text-brand-700" : "bg-amber-100 text-amber-800";
@@ -30,10 +30,13 @@ export function ListingCard({ listing }: { listing: Listing }) {
         {l.kind === "holder" && l.approval_expires_on && (
           <div className="col-span-2 text-stone-700">{expiryLabel(l.approval_expires_on)}</div>
         )}
-        {l.kind === "holder" && (
-          <Stat label="الوديعة المدفوعة" value={formatUsd(l.deposit_usd)} />
-        )}
-        <Stat label={l.kind === "holder" ? "الوديعة المطلوبة" : "المبلغ المعروض"} value={formatUsd(l.amount_usd)} />
+        <Stat label="الوديعة" value={formatUsd(l.amount_usd)} />
+        <Stat label="كاش" value={formatUsd(l.cash_usd)} />
+        <div className="col-span-2 flex items-center justify-between rounded-lg bg-brand-50 px-2 py-1.5">
+          <dt className="text-xs text-brand-700">الإجمالي على المشتري</dt>
+          <dd className="font-extrabold text-brand-700" dir="ltr">{formatUsd(buyerTotal(l))}</dd>
+        </div>
+        {l.kind === "holder" && <Stat label="المدفوع" value={formatUsd(l.deposit_usd)} />}
         <Stat label="نوع السيارة" value={CAR_KIND_LABEL[l.car_kind]} />
       </dl>
     </Link>

@@ -14,6 +14,7 @@ export type Listing = {
   deposit_usd: number | null;
   car_kind: CarKind;
   amount_usd: number | null;
+  cash_usd: number | null;
   title: string;
   details: string | null;
   status: "active" | "closed";
@@ -38,7 +39,7 @@ export const CAR_KIND_LABEL: Record<CarKind, string> = {
   any: "أي نوع",
 };
 
-const blankToNull = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
+const blankToNull = (v: unknown) => (v === undefined || (typeof v === "string" && v.trim() === "") ? null : v);
 const optionalInt = (max: number) =>
   z.preprocess(
     (v) => {
@@ -49,7 +50,7 @@ const optionalInt = (max: number) =>
   );
 const optionalText = (max: number) =>
   z.preprocess(
-    (v) => (typeof v === "string" ? blankToNull(v.trim()) : v),
+    (v) => (typeof v === "string" ? blankToNull(v.trim()) : (v ?? null)),
     z.string().max(max, `الحد الأقصى ${max} حرف`).nullable(),
   );
 
@@ -65,6 +66,7 @@ export const listingSchema = z
     deposit_usd: optionalInt(1_000_000),
     car_kind: z.enum(["fuel", "electric", "any"]).default("any"),
     amount_usd: optionalInt(10_000_000),
+    cash_usd: optionalInt(10_000_000),
     title: z.string().trim().min(5, "العنوان قصير جدًا").max(100, "العنوان طويل جدًا"),
     details: optionalText(2000),
   })
@@ -86,7 +88,7 @@ export function parseListingForm(form: FormData):
   | { ok: true; data: ListingInput }
   | { ok: false; errors: FieldErrors } {
   const raw = Object.fromEntries(
-    ["kind", "country", "city", "approval_expires_on", "deposit_usd", "car_kind", "amount_usd",
+    ["kind", "country", "city", "approval_expires_on", "deposit_usd", "car_kind", "amount_usd", "cash_usd",
       "title", "details"].map((k) => [k, form.get(k) ?? undefined]),
   );
   const result = listingSchema.safeParse(raw);
@@ -142,5 +144,15 @@ export const SORTS = {
   new: "الأحدث",
   expiry: "الأقرب انتهاءً",
   deposit: "الأقل وديعة",
+  cash: "الأقل كاش",
 } as const;
+
+/** What the buyer pays in total: the deposit (held by the government 5 years) + the cash. */
+export function buyerTotal(l: Pick<Listing, "amount_usd" | "cash_usd">) {
+  if (l.amount_usd == null && l.cash_usd == null) return null;
+  return (l.amount_usd ?? 0) + (l.cash_usd ?? 0);
+}
+
+export const DEAL_NOTE =
+  "المشتري يدفع الوديعة + الكاش. صاحب الموافقة ياخد الكاش دلوقتي، والوديعة ترجع له من الحكومة بعد 5 سنين.";
 export type SortKey = keyof typeof SORTS;
