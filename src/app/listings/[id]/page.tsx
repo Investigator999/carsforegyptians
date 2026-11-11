@@ -126,8 +126,7 @@ export default async function ListingPage({ params }: Params) {
       </section>
 
       <aside className="rounded-2xl bg-amber-50 p-4 text-sm leading-7 text-amber-900">
-        <b>قبل أي اتفاق:</b> لا تحوّل أي مبلغ قبل ما تتأكد من شخصية الطرف الآخر وبيانات موافقته، واكتب عقد
-        شراكة واضح عند محامٍ. <Link href="/safety" className="underline">نصائح الأمان</Link>
+        <b>قبل أي اتفاق:</b> لا تحوّل أي مبلغ قبل ما تتأكد من شخصية الطرف الآخر وبيانات موافقته، واكتب اتفاق واضح عند محامٍ. <Link href="/safety" className="underline">نصائح الأمان</Link>
       </aside>
 
       {user && !isOwner && !l.is_demo && <ReportForm listingId={l.id} />}

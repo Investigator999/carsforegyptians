@@ -145,7 +145,6 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
           name="details"
           rows={5}
           defaultValue={initial?.details ?? ""}
-          placeholder="مثال: نوع السيارة المقترحة، طريقة تقسيم الأرباح، مين يتابع الشحن والبيع…"
           className="input"
         />
         <p className="mt-1 text-xs text-stone-500">لا تكتب رقم تليفونك هنا. الرقم بيتشارك فقط لما توافق على طلب تواصل.</p>
