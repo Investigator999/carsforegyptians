@@ -43,6 +43,9 @@ export async function signInOrUp(_: FormState, form: FormData): Promise<FormStat
 
   const login = await supabase.auth.signInWithPassword({ email: email.data, password });
   if (login.error) {
+    if (login.error.code === "email_not_confirmed") {
+      return { message: "الحساب ده لسه مش متأكد. لو مفيش رسالة وصلتك، تواصل مع إدارة الموقع لتفعيله." };
+    }
     if (login.error.code !== "invalid_credentials") return { message: "حصل خطأ، حاول مرة أخرى بعد دقيقة." };
     const signup = await supabase.auth.signUp({
       email: email.data,
