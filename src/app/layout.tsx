@@ -20,8 +20,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen font-sans antialiased">
         <header className="border-b border-stone-200 bg-white">
           <nav className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
-            <Link href="/" className="text-lg font-extrabold text-brand-700">
-              <span dir="ltr">🚗 Car Exit</span>
+            <Link href="/" className="flex flex-col items-center leading-tight text-brand-700">
+              <span dir="ltr" className="text-lg font-extrabold">🚗 Car Exit</span>
+              <span className="text-xs font-bold text-brand-600">كار إكزت</span>
             </Link>
             <div className="ms-auto flex items-center gap-2 text-sm">
               <Link href="/listings/new" className="btn-primary px-3 py-2 text-sm">
