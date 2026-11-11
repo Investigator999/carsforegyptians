@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import type { FormState } from "@/app/actions";
 import { COUNTRIES } from "@/lib/countries";
 import { CAR_KIND_LABEL, KIND_LABEL, type Listing, type ListingKind } from "@/lib/listings";
-import { FieldError, FormMessage, SubmitButton } from "./forms";
+import { FieldError, FormMessage, SubmitButton, KeepForm } from "./forms";
 
 type Props = {
   action: (state: FormState, form: FormData) => Promise<FormState>;
@@ -14,13 +14,13 @@ type Props = {
 };
 
 export function ListingForm({ action, initial, defaultKind = "holder", submitLabel }: Props) {
-  const [state, formAction] = useActionState<FormState, FormData>(action, {});
+  const [state, formAction, pending] = useActionState<FormState, FormData>(action, {});
   const [kind, setKind] = useState<ListingKind>(initial?.kind ?? defaultKind);
   const editing = Boolean(initial?.id);
   const holder = kind === "holder";
 
   return (
-    <form action={formAction} className="space-y-5">
+    <KeepForm action={formAction} pending={pending} className="space-y-5">
       <fieldset disabled={editing}>
         <legend className="label">نوع الإعلان</legend>
         <div className="grid gap-2 sm:grid-cols-2">
@@ -120,6 +120,6 @@ export function ListingForm({ action, initial, defaultKind = "holder", submitLab
 
       <FormMessage state={state} />
       <SubmitButton className="btn-primary w-full sm:w-auto">{submitLabel}</SubmitButton>
-    </form>
+    </KeepForm>
   );
 }

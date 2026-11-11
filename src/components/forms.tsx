@@ -1,10 +1,44 @@
 "use client";
 
+import { createContext, startTransition, useContext } from "react";
 import { useFormStatus } from "react-dom";
 import type { FormState } from "@/app/actions";
 
+const Pending = createContext<boolean | null>(null);
+
+/**
+ * A form that runs a useActionState action WITHOUT clearing what the user typed.
+ * (A plain <form action> resets every field after submit, so one mistake wipes the form.)
+ */
+export function KeepForm({
+  action,
+  pending,
+  className,
+  children,
+}: {
+  action: (form: FormData) => void;
+  pending: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <form
+      className={className}
+      onSubmit={(e) => {
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => action(data));
+      }}
+    >
+      <Pending.Provider value={pending}>{children}</Pending.Provider>
+    </form>
+  );
+}
+
 export function SubmitButton({ children, className = "btn-primary" }: { children: React.ReactNode; className?: string }) {
-  const { pending } = useFormStatus();
+  const kept = useContext(Pending);
+  const status = useFormStatus();
+  const pending = kept ?? status.pending;
   return (
     <button type="submit" disabled={pending} className={className}>
       {pending ? "لحظة…" : children}

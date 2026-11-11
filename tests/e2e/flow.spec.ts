@@ -1,7 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 
-// Needs the local stack: `npm run db:start` (Mailpit catches the login emails).
-const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
+// Needs the local stack: `npm run db:start`.
 const SUPABASE = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
@@ -10,27 +9,12 @@ const holder = { email: `holder-${run}@example.com`, name: "أحمد", phone: "+
 const funder = { email: `funder-${run}@example.com`, name: "محمود", phone: "+971502223344" };
 const title = `موافقة سارية حتى 2028 رقم ${run}`;
 
-async function loginLink(email: string) {
-  for (let i = 0; i < 30; i++) {
-    const res = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`);
-    const { messages } = (await res.json()) as { messages: { ID: string }[] };
-    if (messages?.length) {
-      const msg = await (await fetch(`${MAILPIT}/api/v1/message/${messages[0].ID}`)).json();
-      const link = String(msg.Text).match(/https?:\/\/\S+verify\S+/)?.[0];
-      if (link) return link.replace(/[)\]]+$/, "");
-    }
-    await new Promise((r) => setTimeout(r, 500));
-  }
-  throw new Error(`no login email for ${email}`);
-}
-
 async function signUp(browser: Browser, who: typeof holder, next: string): Promise<Page> {
   const page = await (await browser.newContext()).newPage();
   await page.goto(`/login?next=${encodeURIComponent(next)}`);
   await page.getByLabel("البريد الإلكتروني").fill(who.email);
-  await page.getByRole("button", { name: "أرسل لي رابط الدخول" }).click();
-  await expect(page.getByRole("status")).toContainText("أرسلنا رابط الدخول");
-  await page.goto(await loginLink(who.email));
+  await page.getByLabel("كلمة السر").fill("secret-pass-1");
+  await page.getByRole("button", { name: "دخول / إنشاء حساب" }).click();
   // first visit: fill in name + WhatsApp, then continue to `next`
   await page.getByLabel("الاسم اللي هيظهر للناس").fill(who.name);
   await page.getByLabel("رقم الواتساب بكود الدولة").fill(who.phone);
@@ -49,6 +33,12 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   await h.getByLabel("الوديعة المدفوعة (دولار)").fill("850");
   await h.getByLabel("التمويل المطلوب (دولار)").fill("25000");
   await h.getByLabel("نسبة الممول من الربح %").fill("50");
+  // a mistake shows an error but keeps everything already typed
+  await h.getByLabel("عنوان الإعلان").fill("abc");
+  await h.getByRole("button", { name: "نشر الإعلان" }).click();
+  await expect(h.getByText("العنوان قصير جدًا")).toBeVisible();
+  await expect(h.getByLabel("الوديعة المدفوعة (دولار)")).toHaveValue("850");
+  await h.getByLabel("عنوان الإعلان").fill(title);
   await h.getByRole("button", { name: "نشر الإعلان" }).click();
   await h.waitForURL(/\/listings\/[0-9a-f-]{36}$/);
   const listingUrl = new URL(h.url()).pathname;
@@ -87,4 +77,16 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   // 5. funder now sees the holder's number
   await f.reload();
   await expect(f.getByTestId("outgoing-request").getByTestId("contact")).toContainText(holder.phone);
+
+  // 6. logging back in with a wrong password is refused, the right one works
+  const again = await (await browser.newContext()).newPage();
+  await again.goto("/login");
+  await again.getByLabel("البريد الإلكتروني").fill(holder.email);
+  await again.getByLabel("كلمة السر").fill("wrong-pass-1");
+  await again.getByRole("button", { name: "دخول / إنشاء حساب" }).click();
+  await expect(again.getByText("كلمة السر غير صحيحة")).toBeVisible();
+  await again.getByLabel("كلمة السر").fill("secret-pass-1");
+  await again.getByRole("button", { name: "دخول / إنشاء حساب" }).click();
+  await expect(again).toHaveURL(/\/me$/);
+  await expect(again.getByTestId("incoming-request")).toContainText(funder.name);
 });

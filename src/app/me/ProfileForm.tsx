@@ -2,12 +2,12 @@
 
 import { useActionState } from "react";
 import { saveProfile, type FormState } from "@/app/actions";
-import { FieldError, FormMessage, SubmitButton } from "@/components/forms";
+import { FieldError, FormMessage, SubmitButton, KeepForm } from "@/components/forms";
 
 export function ProfileForm({ initial, next }: { initial: { display_name: string; whatsapp: string } | null; next?: string }) {
-  const [state, action] = useActionState<FormState, FormData>(saveProfile, {});
+  const [state, action, pending] = useActionState<FormState, FormData>(saveProfile, {});
   return (
-    <form action={action} className="space-y-4">
+    <KeepForm action={action} pending={pending} className="space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       <div>
         <label className="label" htmlFor="display_name">الاسم اللي هيظهر للناس</label>
@@ -24,6 +24,6 @@ export function ProfileForm({ initial, next }: { initial: { display_name: string
       </div>
       <FormMessage state={state} />
       <SubmitButton>حفظ</SubmitButton>
-    </form>
+    </KeepForm>
   );
 }

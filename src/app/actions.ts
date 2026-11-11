@@ -30,17 +30,37 @@ function safeNext(value: FormDataEntryValue | null) {
 
 // ───────────── auth ─────────────
 
-export async function sendLoginLink(_: FormState, form: FormData): Promise<FormState> {
-  const email = z.email().safeParse(String(form.get("email") ?? "").trim());
-  if (!email.success) return { errors: { email: "اكتب بريد إلكتروني صحيح" } };
+/** One form for both: log in if the account exists, otherwise create it. No email is sent. */
+export async function signInOrUp(_: FormState, form: FormData): Promise<FormState> {
+  const email = z.email().safeParse(String(form.get("email") ?? "").trim().toLowerCase());
+  const password = String(form.get("password") ?? "");
+  const errors: FieldErrors = {};
+  if (!email.success) errors.email = "اكتب بريد إلكتروني صحيح";
+  if (password.length < 6) errors.password = "كلمة السر 6 حروف أو أرقام على الأقل";
+  if (!email.success || Object.keys(errors).length) return { errors };
   const next = safeNext(form.get("next"));
   const { supabase } = await currentUser();
-  const { error } = await supabase.auth.signInWithOtp({
-    email: email.data,
-    options: { emailRedirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}` },
-  });
-  if (error) return { message: "تعذر إرسال الرابط. انتظر دقيقة وحاول مرة أخرى." };
-  return { ok: true, message: `أرسلنا رابط الدخول إلى ${email.data}. افتح بريدك واضغط على الرابط.` };
+
+  const login = await supabase.auth.signInWithPassword({ email: email.data, password });
+  if (login.error) {
+    if (login.error.code !== "invalid_credentials") return { message: "حصل خطأ، حاول مرة أخرى بعد دقيقة." };
+    const signup = await supabase.auth.signUp({
+      email: email.data,
+      password,
+      options: { emailRedirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}` },
+    });
+    if (signup.error) {
+      if (signup.error.code === "user_already_exists") return { errors: { password: "كلمة السر غير صحيحة" } };
+      if (signup.error.code === "weak_password") return { errors: { password: "كلمة السر ضعيفة، جرّب كلمة أطول" } };
+      return { message: "تعذر إنشاء الحساب، حاول مرة أخرى بعد دقيقة." };
+    }
+    // Supabase still asks for email confirmation (should be turned off in the dashboard)
+    if (!signup.data.session) return { ok: true, message: `أرسلنا رسالة تأكيد إلى ${email.data}. افتحها ثم سجّل الدخول.` };
+  }
+
+  const { data } = await supabase.rpc("get_my_profile");
+  const hasProfile = Array.isArray(data) && data.length > 0;
+  redirect(hasProfile ? next : `/me?next=${encodeURIComponent(next)}`);
 }
 
 export async function signOut() {
