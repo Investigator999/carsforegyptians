@@ -18,6 +18,7 @@ export type Listing = {
   details: string | null;
   status: "active" | "closed";
   hidden: boolean;
+  is_demo: boolean;
   created_at: string;
 };
 

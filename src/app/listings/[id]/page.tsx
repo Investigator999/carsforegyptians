@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { myProfile, supabaseServer } from "@/lib/supabase/server";
 import { countryLabel } from "@/lib/countries";
 import { CAR_KIND_LABEL, KIND_LABEL, expiryLabel, formatUsd, type Listing } from "@/lib/listings";
-import { KindBadge } from "@/components/ListingCard";
+import { DemoBadge, KindBadge } from "@/components/ListingCard";
 import { ContactForm, ReportForm } from "./ListingActions";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +61,7 @@ export default async function ListingPage({ params }: Params) {
         <div className="flex flex-wrap items-center gap-2">
           <KindBadge kind={l.kind} />
           <span className="text-sm text-stone-600">{KIND_LABEL[l.kind]}</span>
+          {l.is_demo && <DemoBadge />}
           {l.status === "closed" && <span className="rounded-full bg-stone-200 px-2 py-0.5 text-xs">مغلق</span>}
         </div>
         <h1 className="text-2xl font-extrabold">{l.title}</h1>
@@ -77,7 +78,12 @@ export default async function ListingPage({ params }: Params) {
       </article>
 
       <section className="card space-y-3">
-        {isOwner ? (
+        {l.is_demo ? (
+          <p className="text-sm text-stone-600" data-testid="demo-listing">
+            هذا عرض تجريبي لتوضيح شكل الموقع فقط، وليس للتواصل.{" "}
+            <Link href="/" className="underline">شوف العروض الحقيقية</Link>
+          </p>
+        ) : isOwner ? (
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm text-stone-600">ده إعلانك. طلبات التواصل بتوصلك في صفحة حسابي.</p>
             <Link href={`/listings/${l.id}/edit`} className="btn-ghost ms-auto">تعديل</Link>
@@ -107,7 +113,7 @@ export default async function ListingPage({ params }: Params) {
         شراكة واضح عند محامٍ. <Link href="/safety" className="underline">نصائح الأمان</Link>
       </aside>
 
-      {user && !isOwner && <ReportForm listingId={l.id} />}
+      {user && !isOwner && !l.is_demo && <ReportForm listingId={l.id} />}
     </div>
   );
 }

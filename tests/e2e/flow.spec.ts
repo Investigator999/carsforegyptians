@@ -57,6 +57,14 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
   });
   expect(api.ok).toBe(false);
 
+  // …and the dashboard counts it, next to the demo offers that can't be contacted
+  await anon.goto("/dashboard");
+  await expect(anon.getByTestId("demo-note")).toBeVisible();
+  await expect(anon.getByTestId("offer-row").filter({ hasText: "$25,000" }).first()).toBeVisible();
+  await anon.goto("/");
+  await anon.getByTestId("listing-card").filter({ hasText: "تجريبي" }).first().click();
+  await expect(anon.getByTestId("demo-listing")).toBeVisible();
+
   // 3. funder asks to connect
   const f = await signUp(browser, funder, listingUrl);
   await f.getByLabel("رسالة لصاحب الإعلان").fill("أهلًا، معي التمويل وأحب نتكلم");

@@ -4,7 +4,13 @@ import { CAR_KIND_LABEL, KIND_SHORT, expiryLabel, formatUsd, type Listing } from
 
 export function KindBadge({ kind }: { kind: Listing["kind"] }) {
   const cls = kind === "holder" ? "bg-brand-100 text-brand-700" : "bg-amber-100 text-amber-800";
-  return <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${cls}`}>{KIND_SHORT[kind]}</span>;
+  return <span className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-bold ${cls}`}>{KIND_SHORT[kind]}</span>;
+}
+
+export function DemoBadge() {
+  return (
+    <span className="whitespace-nowrap rounded-full bg-stone-200 px-2.5 py-0.5 text-xs font-bold text-stone-700">تجريبي · ليس للتواصل</span>
+  );
 }
 
 export function ListingCard({ listing }: { listing: Listing }) {
@@ -13,6 +19,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
     <Link href={`/listings/${l.id}`} className="card block transition hover:border-brand-600" data-testid="listing-card">
       <div className="mb-2 flex items-center gap-2 text-sm">
         <KindBadge kind={l.kind} />
+        {l.is_demo && <DemoBadge />}
         <span className="text-stone-600">
           {countryLabel(l.country)}
           {l.city ? ` · ${l.city}` : ""}

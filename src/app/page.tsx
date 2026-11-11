@@ -52,7 +52,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
 
       {market.length > 0 && (
         <section>
-          <h2 className="mb-1 text-lg font-extrabold">السوق حسب الدولة</h2>
+          <div className="mb-1 flex items-center">
+            <h2 className="text-lg font-extrabold">السوق حسب الدولة</h2>
+            <Link href="/dashboard" className="ms-auto text-sm font-semibold text-brand-700 hover:underline">
+              لوحة السوق كاملة ←
+            </Link>
+          </div>
           <p className="mb-3 text-sm text-stone-600">
             {totals.h} صاحب موافقة و{totals.f} ممول معروضين الآن
           </p>

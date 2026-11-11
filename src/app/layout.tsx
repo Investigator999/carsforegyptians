@@ -25,6 +25,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <span className="text-xs font-bold text-brand-600">كار إكزت</span>
             </Link>
             <div className="ms-auto flex items-center gap-2 text-sm">
+              <Link href="/dashboard" className="px-1 py-2 font-semibold text-stone-700 hover:text-brand-700">
+                السوق
+              </Link>
               <Link href="/listings/new" className="btn-primary px-3 py-2 text-sm">
                 + أضف إعلان
               </Link>
