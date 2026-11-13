@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Cairo } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { currentUser } from "@/lib/supabase/server";
 import { signOut } from "./actions";
 import "./globals.css";
@@ -80,6 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </a>
           </p>
         </footer>
+        <Analytics />
       </body>
     </html>
   );

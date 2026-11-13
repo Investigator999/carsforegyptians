@@ -56,5 +56,10 @@ on conflict (id) do update set resend_api_key = excluded.resend_api_key, notify_
 ```
 Delete that row to stop the emails. Sending happens in the background, so a failed email never blocks a user.
 
+## Visitor statistics and "list it for me"
+- **Vercel Web Analytics** is built in (`@vercel/analytics`). Turn it on in Vercel → project → **Analytics** → Enable.
+- Set `NEXT_PUBLIC_OWNER_WHATSAPP` (with country code) in Vercel to show a WhatsApp button on the home and login pages. It opens a ready message where people fill in their approval details so you can list it for them. Redeploy after setting it.
+- Admin accounts can post more than 5 listings: `update profiles set is_admin = true where id = (select id from auth.users where email = 'you@example.com');`
+
 ## Moderating
 There is no admin page yet. Use the Supabase dashboard: the **Table Editor** shows `reports`, and setting `listings.hidden = false` brings a listing back after review.

@@ -47,6 +47,11 @@ test("holder posts, funder asks, holder accepts, both see each other's WhatsApp"
 
   // 2. a logged-out visitor sees it on the board and in the market table, but no phone number
   const anon = await (await browser.newContext()).newPage();
+  // the "list it for me" WhatsApp button (shown when NEXT_PUBLIC_OWNER_WHATSAPP is set)
+  if (process.env.NEXT_PUBLIC_OWNER_WHATSAPP) {
+    await anon.goto("/");
+    await expect(anon.getByTestId("list-for-me")).toHaveAttribute("href", /^https:\/\/wa\.me\/\d+\?text=/);
+  }
   await anon.goto("/?country=SA");
   await expect(anon.getByTestId("listing-card").filter({ hasText: title })).toBeVisible();
   await expect(anon.getByRole("table")).toContainText("السعودية");

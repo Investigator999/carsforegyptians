@@ -3,6 +3,7 @@ import { COUNTRIES, countryLabel, isCountryCode } from "@/lib/countries";
 import { CAR_KIND_LABEL, SORTS, formatUsd, type Listing, type SortKey } from "@/lib/listings";
 import { supabaseServer } from "@/lib/supabase/server";
 import { ListingCard } from "@/components/ListingCard";
+import { ListForMe } from "@/components/ListForMe";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Sea
           <Link href="/listings/new?kind=funder" className="btn border border-white/40 text-white hover:bg-white/10">
             عايز أشتري موافقة
           </Link>
+          <ListForMe variant="hero" />
         </div>
       </section>
 

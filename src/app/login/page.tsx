@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { myProfile } from "@/lib/supabase/server";
 import { LoginForm } from "./LoginForm";
+import { ListForMe } from "@/components/ListForMe";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const { next = "/me", error } = await searchParams;
@@ -25,6 +26,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </p>
       {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">الرابط انتهى أو استُخدم من قبل. اطلب رابط جديد.</p>}
       <LoginForm next={next} />
+      <ListForMe />
     </div>
   );
 }
