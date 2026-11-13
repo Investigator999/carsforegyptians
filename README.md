@@ -47,5 +47,14 @@ Login emails land in Mailpit at http://127.0.0.1:54324.
 3. **Supabase → Authentication → Emails:** the built-in mailer only sends a few emails per hour. For real traffic, set up custom SMTP (Resend, Brevo, etc.). You can also translate the "Magic Link" email template into Arabic.
 4. **Vercel:** import the GitHub repo and add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Supabase → Settings → API). Deploy.
 
+## Email notifications
+`supabase/migrations/20261113000000_notifications.sql` emails the owner (through Resend) on every new account, completed profile, real listing and contact request, with running totals. After running it, add your Resend key and email once:
+```sql
+insert into private.notify_settings (resend_api_key, notify_email)
+values ('re_YOUR_KEY', 'you@example.com')
+on conflict (id) do update set resend_api_key = excluded.resend_api_key, notify_email = excluded.notify_email;
+```
+Delete that row to stop the emails. Sending happens in the background, so a failed email never blocks a user.
+
 ## Moderating
 There is no admin page yet. Use the Supabase dashboard: the **Table Editor** shows `reports`, and setting `listings.hidden = false` brings a listing back after review.
